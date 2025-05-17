@@ -1,0 +1,26 @@
+% !TEX program = lualatex
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[backend=biber,style=numeric]{biblatex}
+\addbibresource{literatur.bib}
+
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{csquotes}
+
+\title{LaTeX → PDF + HTML + Word Workflow}
+\author{Lieber Frank}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\section{Einleitung}
+Dies ist ein Beispiel für einen automatisierten Workflow:
+PDF, HTML und Word werden aus diesem \LaTeX-Dokument erzeugt.
+
+\section{Zitat}
+Siehe dazu~\cite{knuth1984}.
+
+\printbibliography
+\end{document}
