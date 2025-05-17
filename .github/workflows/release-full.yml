@@ -1,0 +1,53 @@
+name: Build and Release PDF + HTML + Word
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+env:
+  TEXFILE: main.tex
+  BASE_NAME: release
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v3
+
+    - name: Install TeX Live and Pandoc
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y texlive-full pandoc texlive-xetex
+
+    - name: Compile PDF via latexmk
+      run: |
+        cd paper
+        TAG="${GITHUB_REF##*/}"
+        PDF="${BASE_NAME}-${TAG}.pdf"
+        latexmk -lualatex -interaction=nonstopmode "$TEXFILE"
+        mv "${TEXFILE%.tex}.pdf" "$PDF"
+        echo "RELEASE_PDF=$PDF" >> $GITHUB_ENV
+
+    - name: Generate HTML and DOCX via Pandoc
+      run: |
+        cd paper
+        TAG="${GITHUB_REF##*/}"
+        HTML="${BASE_NAME}-${TAG}.html"
+        DOCX="${BASE_NAME}-${TAG}.docx"
+        pandoc main.tex -s -o "$HTML"
+        pandoc main.tex -s -o "$DOCX"
+        echo "RELEASE_HTML=$HTML" >> $GITHUB_ENV
+        echo "RELEASE_DOCX=$DOCX" >> $GITHUB_ENV
+
+    - name: Upload Release Assets
+      uses: softprops/action-gh-release@v1
+      with:
+        files: |
+          paper/${{ env.RELEASE_PDF }}
+          paper/${{ env.RELEASE_HTML }}
+          paper/${{ env.RELEASE_DOCX }}
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
