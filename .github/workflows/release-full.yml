@@ -9,6 +9,9 @@ env:
   TEXFILE: main.tex
   BASE_NAME: release
 
+permissions:
+  contents: write
+  
 jobs:
   build-and-release:
     runs-on: ubuntu-latest
